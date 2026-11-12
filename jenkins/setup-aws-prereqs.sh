@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-REGION="${1:-${AWS_REGION:-us-east-1}}"
+REGION="${1:-${AWS_REGION:-ap-south-1}}"
 ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
 BUCKET="library-tfstate-${ACCOUNT}"
 POLICY_NAME="jenkins-ci-policy"

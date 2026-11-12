@@ -6,7 +6,7 @@ is created by Terraform **from the Jenkins pipeline**. Jenkins talks to AWS thro
 ## 1. Create the IAM role, policy and Terraform state bucket (laptop, admin credentials)
 ```bash
 aws configure                              # an admin IAM user (not root)
-bash jenkins/setup-aws-prereqs.sh us-east-1   # use the SAME region everywhere
+bash jenkins/setup-aws-prereqs.sh ap-south-1   # use the SAME region everywhere
 ```
 Creates: S3 bucket `library-tfstate-<account-id>`, policy `jenkins-ci-policy`, role `jenkins-ec2-role`,
 instance profile `jenkins-ec2-profile`. Policy source: `jenkins/iam/jenkins-policy.json` (review it).
