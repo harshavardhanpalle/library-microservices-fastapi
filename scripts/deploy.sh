@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 
 TAG="${1:?usage: deploy.sh <image-tag>}"
 : "${ECR_REGISTRY:?ECR_REGISTRY must be set}"
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 
 # First run: create .env with a random DB password (never committed)
 if [ ! -f .env ]; then

@@ -19,7 +19,7 @@ pipeline {
 
   parameters {
     choice(name: 'ACTION', choices: ['deploy', 'plan-only', 'destroy'], description: 'deploy = infra + build + push + deploy | plan-only = terraform plan only | destroy = remove ALL Terraform-managed infrastructure')
-    string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS region (must match the region used when running jenkins/setup-aws-prereqs.sh)')
+    string(name: 'AWS_REGION', defaultValue: 'ap-south-1', description: 'AWS region (must match the region used when running jenkins/setup-aws-prereqs.sh)')
     string(name: 'DEPLOY_TAG', defaultValue: '', description: 'Optional: deploy an EXISTING image tag from ECR (skips test/build/push). Use for rollback.')
   }
 
