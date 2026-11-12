@@ -1,0 +1,21 @@
+groups:
+  - name: library-alerts
+    rules:
+      - alert: ServiceDown
+        expr: probe_success{job="service-health"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "{{ $labels.instance }} is not responding"
+      - alert: HighCPU
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Host CPU above 85%"
+      - alert: DiskAlmostFull
+        expr: (1 - node_filesystem_avail_bytes{mountpoint=~"/|/host",fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint=~"/|/host",fstype!="tmpfs"}) * 100 > 85
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Root disk above 85%"

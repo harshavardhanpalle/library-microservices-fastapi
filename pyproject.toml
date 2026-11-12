@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "library-microservices"
+version = "1.0.0"
+description = "Microservices architecture with FastAPI, PostgreSQL, and Nginx orchestrated with Docker Compose"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "David Cruz", email = "cruzd2249@gmail.com" }
+]
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests", "books_service", "users_service", "orders_service"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning"
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["B008", "E501"]

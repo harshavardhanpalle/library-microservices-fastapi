@@ -1,0 +1,39 @@
+# Production override: pulls versioned images from ECR and adds health checks.
+# Usage: ECR_REGISTRY=<acct>.dkr.ecr.<region>.amazonaws.com IMAGE_TAG=<tag> \
+#   docker compose -p library --env-file .env -f docker-compose.yml -f docker-compose.prod.yml up -d --no-build
+x-py-health: &py-health
+  test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=3).status == 200 else 1)"]
+  interval: 15s
+  timeout: 5s
+  retries: 5
+  start_period: 20s
+
+services:
+  users_service:
+    image: ${ECR_REGISTRY}/library/users:${IMAGE_TAG}
+    pull_policy: always
+    healthcheck: *py-health
+
+  books_service:
+    image: ${ECR_REGISTRY}/library/books:${IMAGE_TAG}
+    pull_policy: always
+    healthcheck: *py-health
+
+  orders_service:
+    image: ${ECR_REGISTRY}/library/orders:${IMAGE_TAG}
+    pull_policy: always
+    healthcheck: *py-health
+
+  nginx:
+    depends_on:
+      users_service:
+        condition: service_healthy
+      books_service:
+        condition: service_healthy
+      orders_service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/api/users/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
