@@ -1,0 +1,39 @@
+# Environment files
+.env
+*.env
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.class
+*.so
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# DevOps: never commit secrets or state
+.env
+.env.monitoring
+*.pem
+*.key
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+*.tfplan
+crash.log
