@@ -47,6 +47,27 @@ resource "aws_vpc_security_group_ingress_rule" "http" {
   ip_protocol       = "tcp"
 }
 
+# Jenkins (manually created EC2, same VPC) -> app host: SSH for deployment, HTTP for verification
+resource "aws_vpc_security_group_ingress_rule" "ssh_from_jenkins" {
+  count                        = var.jenkins_security_group_id == "" ? 0 : 1
+  security_group_id            = aws_security_group.app.id
+  description                  = "SSH from Jenkins host"
+  referenced_security_group_id = var.jenkins_security_group_id
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "http_from_jenkins" {
+  count                        = var.jenkins_security_group_id == "" ? 0 : 1
+  security_group_id            = aws_security_group.app.id
+  description                  = "HTTP from Jenkins host (deployment verification)"
+  referenced_security_group_id = var.jenkins_security_group_id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
 # Outbound limited to what the host needs: apt, ECR/Docker pulls (80/443), DNS, NTP
 resource "aws_vpc_security_group_egress_rule" "https" {
   security_group_id = aws_security_group.app.id
@@ -142,43 +163,6 @@ resource "aws_iam_role_policy_attachment" "ecr_read" {
 resource "aws_iam_instance_profile" "ec2" {
   name = "${var.project_name}-ec2-profile"
   role = aws_iam_role.ec2.name
-}
-
-# ---------- IAM: dedicated Jenkins user, push-only to these 3 repos ----------
-# NOTE: the access key is created MANUALLY in the console and stored in Jenkins credentials,
-# so no secret ever lands in Terraform state or Git.
-resource "aws_iam_user" "jenkins" {
-  name          = "${var.project_name}-jenkins"
-  force_destroy = true # lets terraform destroy remove the manually created access key
-}
-
-data "aws_iam_policy_document" "jenkins_ecr" {
-  statement {
-    sid       = "EcrAuth"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid = "EcrPush"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:CompleteLayerUpload",
-      "ecr:DescribeImages",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:InitiateLayerUpload",
-      "ecr:PutImage",
-      "ecr:UploadLayerPart",
-    ]
-    resources = [for r in aws_ecr_repository.svc : r.arn]
-  }
-}
-
-resource "aws_iam_user_policy" "jenkins_ecr" {
-  name   = "ecr-push"
-  user   = aws_iam_user.jenkins.name
-  policy = data.aws_iam_policy_document.jenkins_ecr.json
 }
 
 # ---------- EC2 ----------

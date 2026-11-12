@@ -28,8 +28,15 @@ variable "ssh_public_key" {
 }
 
 variable "allowed_ssh_cidrs" {
-  description = "CIDRs allowed to SSH (your IP and the Jenkins machine IP), e.g. [\"203.0.113.10/32\"]"
+  description = "Admin CIDRs allowed to SSH (your own IP, for the monitoring tunnel), e.g. [\"203.0.113.10/32\"]. Jenkins is allowed separately via jenkins_security_group_id."
   type        = list(string)
+  default     = []
+}
+
+variable "jenkins_security_group_id" {
+  description = "Security group of the manually created Jenkins EC2 (same VPC). It is allowed SSH (deploy) and HTTP (verification) to the app host. Empty = no rule."
+  type        = string
+  default     = ""
 }
 
 variable "allowed_http_cidrs" {
@@ -54,16 +61,4 @@ variable "budget_email" {
   description = "Email for budget alerts. Leave empty to skip creating the budget."
   type        = string
   default     = ""
-}
-
-variable "create_jenkins_host" {
-  description = "Create a dedicated EC2 instance for Jenkins (set false to use your own workstation)"
-  type        = bool
-  default     = true
-}
-
-variable "jenkins_instance_type" {
-  description = "Jenkins needs >= 2 GB RAM"
-  type        = string
-  default     = "t3.small"
 }

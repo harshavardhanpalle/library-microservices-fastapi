@@ -1,5 +1,7 @@
-# Copy to terraform.tfvars (git-ignored) and edit.
-aws_region         = "us-east-1"
-ssh_public_key     = "ssh-ed25519 AAAA... you@laptop"
-allowed_ssh_cidrs  = ["YOUR.PUBLIC.IP/32", "JENKINS.MACHINE.IP/32"]
-budget_email       = "you@example.com"
+# Normally NOT needed: the Jenkins pipeline passes these as TF_VAR_* variables.
+# Copy to terraform.tfvars (git-ignored) only for manual local runs.
+aws_region                = "us-east-1"
+ssh_public_key            = "ssh-ed25519 AAAA... you@laptop"
+allowed_ssh_cidrs         = ["YOUR.PUBLIC.IP/32"]
+jenkins_security_group_id = "sg-0123456789abcdef0"
+budget_email              = "you@example.com"
